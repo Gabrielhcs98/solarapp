@@ -1,0 +1,13 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Sua imagem de fundo -->
+    <item android:drawable="@drawable/background" />
+
+    <!-- Gradiente -->
+    <item>
+        <shape>
+            <gradient
+                android:startColor="@color/black"
+            android:angle="90" />
+        </shape>
+    </item>
+</layer-list>
