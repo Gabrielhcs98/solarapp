@@ -23,66 +23,68 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:gravity="bottom"
             android:orientation="vertical"
-            android:gravity="bottom">
+            android:layout_marginBottom="24dp">
 
             <!-- Cabeçalho -->
             <TextView
                 android:id="@+id/textViewHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:text="SolarApp"
-                android:textSize="55sp"
                 android:textColor="@color/white"
-                android:textStyle="bold"
-                android:layout_marginBottom="45dp"/>
+                android:textSize="55sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="45dp"
+                android:layout_marginLeft="32dp"
                 android:text="Olá, bem-vindo de volta!"
-                android:textSize="25sp"
                 android:textColor="@color/white"
-                android:layout_marginBottom="45dp"/>
+                android:textSize="25sp" />
 
             <!-- Campos de entrada -->
             <EditText
                 android:id="@+id/editTextLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/edittext_background"
                 android:hint="Localização (latitude, longitude)"
                 android:inputType="text"
-                android:background="@drawable/edittext_background"
-                android:textColor="@android:color/black"
-                android:textColorHint="#A0A0A0"
                 android:padding="12dp"
-                android:layout_marginBottom="12dp" />
+                android:textColor="@android:color/black"
+                android:textColorHint="#A0A0A0" />
 
             <EditText
                 android:id="@+id/editTextTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/edittext_background"
                 android:hint="Tempo (ex: YYYY-MM-DD)"
                 android:inputType="text"
-                android:background="@drawable/edittext_background"
-                android:textColor="@android:color/black"
-                android:textColorHint="#A0A0A0"
                 android:padding="12dp"
-                android:layout_marginBottom="12dp" />
+                android:textColor="@android:color/black"
+                android:textColorHint="#A0A0A0" />
 
             <!-- Botão -->
             <Button
                 android:id="@+id/buttonSubmit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Estimar Geração Solar"
-                android:backgroundTint="#214573"
-                android:textColor="#FFFFFF"
                 android:layout_gravity="center_horizontal"
-                android:paddingEnd="24dp"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="#214573"
                 android:paddingTop="12dp"
+                android:paddingEnd="24dp"
                 android:paddingBottom="12dp"
-                android:layout_marginTop="32dp" />
+                android:text="Estimar Geração Solar"
+                android:textColor="#FFFFFF" />
 
             <!-- Resultados -->
             <TextView
@@ -91,9 +93,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Resultados"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 android:visibility="gone" />
 
         </LinearLayout>
