@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SolarApp</string>
+    <string name="city_not_found">City not found</string>
 </resources>
