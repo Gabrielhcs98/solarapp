@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -21,6 +22,7 @@ class ResultsActivity : AppCompatActivity() {
     private lateinit var textViewResults: TextView
     private lateinit var textViewTemperature: TextView
     private lateinit var imageViewWeatherIcon: ImageView
+    private lateinit var buttonBack: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,11 @@ class ResultsActivity : AppCompatActivity() {
         textViewResults = findViewById(R.id.textViewResults)
         textViewTemperature = findViewById(R.id.textViewTemperature)
         imageViewWeatherIcon = findViewById(R.id.imageViewWeatherIcon)
+        buttonBack = findViewById(R.id.buttonBack)
+
+        buttonBack.setOnClickListener {
+            returnToMainActivity()
+        }
 
         val city = intent.getStringExtra("city")
         try {
@@ -51,7 +58,7 @@ class ResultsActivity : AppCompatActivity() {
                 val weatherData = weatherService.getWeather(city, apiKey)
 
                 withContext(Dispatchers.Main) {
-                    if (weatherData != null && weatherData.name.isNotEmpty()) {
+                    if (weatherData.name.isNotEmpty()) {
                         updateUI(weatherData)
                     } else {
                         showDialog(getString(R.string.city_not_found))

@@ -7,4 +7,6 @@
     <string name="city">Localização (cidade)</string>
     <string name="botao_estimar">Estimar Geração Solar</string>
     <string name="error_fetching_data">Cidade não encontrada!</string>
+    <string name="back">Voltar</string>
+    <string name="result">Resultado</string>
 </resources>

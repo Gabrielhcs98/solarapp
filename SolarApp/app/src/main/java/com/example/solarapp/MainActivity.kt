@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         buttonSubmit.setOnClickListener {
             val location = editTextLocation.text.toString()
-            val regex = Regex("^[A-Za-zÁÉÍÓÚÂÊÎÔÛÃÕÇáéíóúâêîôûãõç]+$")
+            val regex = Regex("^[A-Za-zÁÉÍÓÚÂÊÎÔÛÃÕÇáéíóúâêîôûãõç\\s]+$")
 
             val input = editTextLocation.text.toString()
 
