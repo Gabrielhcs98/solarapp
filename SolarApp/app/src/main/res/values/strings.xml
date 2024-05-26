@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">SolarApp</string>
     <string name="city_not_found">City not found</string>
+    <string name="attention">Atenção</string>
+    <string name="campo_invalido">Por favor, digite um local válido!</string>
+    <string name="welcome">Olá, bem-vindo de volta!</string>
+    <string name="city">Localização (cidade)</string>
+    <string name="botao_estimar">Estimar Geração Solar</string>
+    <string name="error_fetching_data">Cidade não encontrada!</string>
 </resources>

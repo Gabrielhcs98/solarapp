@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/icone_painel_solar"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SolarApp"
+        android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"

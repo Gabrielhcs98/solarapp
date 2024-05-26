@@ -1,11 +1,14 @@
 package com.example.solarapp
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -32,15 +35,15 @@ class ResultsActivity : AppCompatActivity() {
             if (!city.isNullOrEmpty()) {
                 fetchWeatherData(city)
             } else {
-                throw IllegalArgumentException(getString(R.string.city_not_found))
+                showDialog(getString(R.string.city_not_found))
             }
         } catch (e: IllegalArgumentException) {
-            textViewResults.text = getString(R.string.city_not_found)
+            showDialog(getString(R.string.city_not_found))
         }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun fetchWeatherData(city: String){
+    private fun fetchWeatherData(city: String) {
         val weatherService = WeatherServiceImpl()
         GlobalScope.launch(Dispatchers.IO) {
             try {
@@ -48,10 +51,17 @@ class ResultsActivity : AppCompatActivity() {
                 val weatherData = weatherService.getWeather(city, apiKey)
 
                 withContext(Dispatchers.Main) {
-                    updateUI(weatherData)
+                    if (weatherData != null && weatherData.name.isNotEmpty()) {
+                        updateUI(weatherData)
+                    } else {
+                        showDialog(getString(R.string.city_not_found))
+                    }
                 }
             } catch (e: Exception) {
-                Log.e("ResultsActivity", "Error fetching weather data")
+                withContext(Dispatchers.Main) {
+                    showDialog(getString(R.string.error_fetching_data))
+                }
+                Log.e("ResultsActivity", "Error fetching weather data", e)
             }
         }
     }
@@ -64,5 +74,29 @@ class ResultsActivity : AppCompatActivity() {
         Glide.with(this)
             .load(iconUrl)
             .into(imageViewWeatherIcon)
+    }
+
+    private fun showDialog(message: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.attention)
+        builder.setMessage(message)
+        builder.setPositiveButton("OK") { dialog, _ ->
+            dialog.dismiss()
+            returnToMainActivity()
+        }
+        val dialog = builder.create()
+        val drawable = ResourcesCompat.getDrawable(resources, R.drawable.drawable, null)
+        dialog.window?.setBackgroundDrawable(drawable)
+        dialog.setOnShowListener {
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.setTextColor(Color.WHITE)
+        }
+        dialog.show()
+    }
+
+    private fun returnToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
