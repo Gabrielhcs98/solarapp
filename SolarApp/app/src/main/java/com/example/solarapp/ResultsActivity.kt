@@ -3,7 +3,9 @@ package com.example.solarapp
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.transition.Slide
 import android.util.Log
+import android.view.Gravity
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -89,8 +91,9 @@ class ResultsActivity : AppCompatActivity() {
         builder.setMessage(message)
         builder.setPositiveButton("OK") { dialog, _ ->
             dialog.dismiss()
-            returnToMainActivity()
+            finish()
         }
+
         val dialog = builder.create()
         val drawable = ResourcesCompat.getDrawable(resources, R.drawable.drawable, null)
         dialog.window?.setBackgroundDrawable(drawable)
@@ -103,6 +106,8 @@ class ResultsActivity : AppCompatActivity() {
 
     private fun returnToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
+
+        window.enterTransition = Slide(Gravity.END)
         startActivity(intent)
         finish()
     }

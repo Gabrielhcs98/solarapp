@@ -14,18 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SolarApp"
         tools:targetApi="31">
+
+        <!-- SplashScreenActivity should be the entry point of the application -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".SplashScreenActivity"
+            android:exported="true"
+            android:theme="@style/Base.Theme.SolarApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ResultsActivity">
-        </activity>
-    </application>
 
+        <!-- MainActivity without the MAIN and LAUNCHER intent-filter -->
+        <activity android:name=".MainActivity" android:exported="true" />
+
+        <activity android:name=".ResultsActivity" />
+    </application>
 </manifest>

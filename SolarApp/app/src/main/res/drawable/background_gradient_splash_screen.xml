@@ -1,0 +1,18 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Sua imagem de fundo -->
+    <item android:drawable="@drawable/background" />
+
+    <!-- Gradiente radial -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:centerX="50%"
+                android:centerY="50%"
+                android:startColor="#65FFFFFF"
+            android:centerColor="#66000000"
+            android:endColor="#80000000"
+            android:gradientRadius="75%" />
+        </shape>
+    </item>
+</layer-list>

@@ -3,6 +3,8 @@ package com.example.solarapp
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.transition.Slide
+import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
@@ -42,6 +44,9 @@ class MainActivity : AppCompatActivity() {
                 // Enviar local digitado pelo usuário
                 val intent = Intent(this, ResultsActivity::class.java)
                 intent.putExtra("city", location)
+
+                // Set the animation
+                window.exitTransition = Slide(Gravity.END)
                 startActivity(intent)
             }
         }
