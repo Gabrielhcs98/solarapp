@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.transition.Slide
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -36,7 +37,7 @@ class ResultsActivity : AppCompatActivity() {
         buttonBack = findViewById(R.id.buttonBack)
 
         buttonBack.setOnClickListener {
-            returnToMainActivity()
+            finish()
         }
 
         val city = intent.getStringExtra("city")
@@ -44,10 +45,10 @@ class ResultsActivity : AppCompatActivity() {
             if (!city.isNullOrEmpty()) {
                 fetchWeatherData(city)
             } else {
-                showDialog(getString(R.string.city_not_found))
+                showDialog(getString(R.string.city_not_found), true)
             }
         } catch (e: IllegalArgumentException) {
-            showDialog(getString(R.string.city_not_found))
+            showDialog(getString(R.string.city_not_found), true)
         }
     }
 
@@ -63,12 +64,12 @@ class ResultsActivity : AppCompatActivity() {
                     if (weatherData.name.isNotEmpty()) {
                         updateUI(weatherData)
                     } else {
-                        showDialog(getString(R.string.city_not_found))
+                        showDialog(getString(R.string.city_not_found), true)
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    showDialog(getString(R.string.error_fetching_data))
+                    showDialog(getString(R.string.error_fetching_data), true)
                 }
                 Log.e("ResultsActivity", "Error fetching weather data", e)
             }
@@ -85,7 +86,11 @@ class ResultsActivity : AppCompatActivity() {
             .into(imageViewWeatherIcon)
     }
 
-    private fun showDialog(message: String) {
+    private fun showDialog(message: String, ocultaBotaoVoltar: Boolean) {
+        if (ocultaBotaoVoltar) {
+            buttonBack.visibility = View.INVISIBLE
+        }
+
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.attention)
         builder.setMessage(message)
@@ -106,10 +111,5 @@ class ResultsActivity : AppCompatActivity() {
             positiveButton.setTextColor(Color.WHITE)
         }
         dialog.show()
-    }
-
-    private fun returnToMainActivity() {
-        window.enterTransition = Slide(Gravity.END)
-        finish()
     }
 }
