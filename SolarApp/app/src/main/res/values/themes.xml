@@ -7,4 +7,10 @@
     </style>
 
     <style name="Theme.SolarApp" parent="Base.Theme.SolarApp" />
+
+    <!-- Full-screen theme for MainActivity -->
+    <style name="FullScreenTheme" parent="Base.Theme.SolarApp">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

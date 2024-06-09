@@ -94,6 +94,10 @@ class ResultsActivity : AppCompatActivity() {
             finish()
         }
 
+        builder.setOnDismissListener{
+            finish()
+        }
+
         val dialog = builder.create()
         val drawable = ResourcesCompat.getDrawable(resources, R.drawable.drawable, null)
         dialog.window?.setBackgroundDrawable(drawable)
@@ -105,10 +109,7 @@ class ResultsActivity : AppCompatActivity() {
     }
 
     private fun returnToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-
         window.enterTransition = Slide(Gravity.END)
-        startActivity(intent)
         finish()
     }
 }
