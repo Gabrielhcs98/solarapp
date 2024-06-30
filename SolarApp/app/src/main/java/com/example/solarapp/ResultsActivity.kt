@@ -1,11 +1,8 @@
 package com.example.solarapp
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.transition.Slide
 import android.util.Log
-import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -13,10 +10,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
-import com.bumptech.glide.Glide
-import kotlinx.coroutines.DelicateCoroutinesApi
+import androidx.lifecycle.lifecycleScope
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -26,6 +24,7 @@ class ResultsActivity : AppCompatActivity() {
     private lateinit var textViewTemperature: TextView
     private lateinit var imageViewWeatherIcon: ImageView
     private lateinit var buttonBack: Button
+    private lateinit var imageLoader: ImageLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +39,13 @@ class ResultsActivity : AppCompatActivity() {
             finish()
         }
 
+        imageLoader = ImageLoader.Builder(this)
+            .crossfade(true) // Habilite transição suave entre imagens
+            .components {
+                add(SvgDecoder.Factory()) // Adiciona suporte para SVGs
+            }
+            .build()
+
         val city = intent.getStringExtra("city")
         try {
             if (!city.isNullOrEmpty()) {
@@ -52,10 +58,9 @@ class ResultsActivity : AppCompatActivity() {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun fetchWeatherData(city: String) {
         val weatherService = WeatherServiceImpl()
-        GlobalScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val apiKey = "a77b6a1742276dd6fb74dc969b5d4380"
                 val weatherData = weatherService.getWeather(city, apiKey)
@@ -76,14 +81,18 @@ class ResultsActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUI(weatherData: WeatherData) {
+    fun updateUI(weatherData: WeatherData) {
         val celsiusTemperature = (weatherData.main.temp - 273.15).toInt()
         textViewResults.text = weatherData.name
         textViewTemperature.text = "${celsiusTemperature}°C"
-        val iconUrl = "https://openweathermap.org/img/w/${weatherData.weather[0].icon}.png"
-        Glide.with(this)
-            .load(iconUrl)
-            .into(imageViewWeatherIcon)
+        val iconUrl = "https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" // Use a versão 2x para melhor qualidade
+
+        val request = ImageRequest.Builder(this)
+            .data(iconUrl)
+            .size(150, 150) // Redimensiona a imagem para 150x150 pixels
+            .target(imageViewWeatherIcon)
+            .build()
+        imageLoader.enqueue(request)
     }
 
     private fun showDialog(message: String, ocultaBotaoVoltar: Boolean) {
