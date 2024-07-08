@@ -46,7 +46,7 @@ class ResultsActivity : AppCompatActivity() {
             }
             .build()
 
-        val city = intent.getStringExtra("city")
+        val city = intent.getStringExtra("city")?.trim()
         try {
             if (!city.isNullOrEmpty()) {
                 fetchWeatherData(city)
@@ -81,7 +81,7 @@ class ResultsActivity : AppCompatActivity() {
         }
     }
 
-    fun updateUI(weatherData: WeatherData) {
+    private fun updateUI(weatherData: WeatherData) {
         val celsiusTemperature = (weatherData.main.temp - 273.15).toInt()
         textViewResults.text = weatherData.name
         textViewTemperature.text = "${celsiusTemperature}°C"

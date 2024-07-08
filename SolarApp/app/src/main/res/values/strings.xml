@@ -9,4 +9,5 @@
     <string name="error_fetching_data">Cidade não encontrada!</string>
     <string name="back">Voltar</string>
     <string name="result">Resultado</string>
+    <string name="error_network">Conexão com a internet lenta. Verifique e tente novamente!</string>
 </resources>
