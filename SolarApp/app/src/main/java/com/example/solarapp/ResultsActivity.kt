@@ -87,12 +87,18 @@ class ResultsActivity : AppCompatActivity() {
         textViewTemperature.text = "${celsiusTemperature}°C"
         val iconUrl = "https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" // Use a versão 2x para melhor qualidade
 
+        val progressBarLoading = findViewById<View>(R.id.progressBarLoading)
+        progressBarLoading.visibility = View.VISIBLE
+        imageViewWeatherIcon.visibility = View.GONE
+        
         val request = ImageRequest.Builder(this)
             .data(iconUrl)
             .size(150, 150) // Redimensiona a imagem para 150x150 pixels
             .target(imageViewWeatherIcon)
             .build()
         imageLoader.enqueue(request)
+        imageViewWeatherIcon.visibility = View.VISIBLE
+        progressBarLoading.visibility = View.GONE
     }
 
     private fun showDialog(message: String, ocultaBotaoVoltar: Boolean) {

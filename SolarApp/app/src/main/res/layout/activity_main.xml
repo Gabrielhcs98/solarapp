@@ -42,7 +42,7 @@
                 android:textColor="@color/white"
                 android:textSize="25sp" />
 
-            <!-- Campos de entrada -->
+            <!-- Input de localização -->
             <EditText
                 android:id="@+id/editTextLocation"
                 android:layout_width="match_parent"
@@ -57,7 +57,7 @@
                 android:textColorHint="#808080"
                 android:autofillHints="postalCode" />
 
-            <!-- Botão -->
+            <!-- Botão Estimar-->
             <Button
                 android:id="@+id/buttonSubmit"
                 android:layout_width="wrap_content"
@@ -70,7 +70,8 @@
                 android:layout_marginBottom="100dp"
                 android:text="@string/botao_estimar"
                 android:textSize="18sp"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>

@@ -10,7 +10,22 @@
         android:src="@drawable/background_gradient"
         android:scaleType="centerCrop"/>
 
-    <!-- Conteúdo da interface do usuário -->
+    <!-- Container para o ImageView e ProgressBar -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <!-- ProgressBar para indicar o carregamento -->
+        <ProgressBar
+            android:id="@+id/progressBarLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="visible"/>
+    </FrameLayout>
+
+    <!-- Restante do layout (textos, botão, etc.) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,25 +52,24 @@
                 android:textSize="55sp"
                 android:textStyle="bold" />
 
-            <!-- TextView para exibir os resultados -->
+            <!-- TextView para exibir o nome -->
             <TextView
                 android:id="@+id/textViewResults"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="35sp"
-                style="bold"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"/>
 
-            <!-- ImageView para exibir o ícone do clima -->
+            <!-- ImageView para exibir a imagem do clima -->
             <ImageView
                 android:id="@+id/imageViewWeatherIcon"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:scaleType="fitCenter"/>
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                android:layout_gravity="center"/>
 
             <!-- TextView para exibir a temperatura -->
             <TextView
@@ -64,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="35sp"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="center"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="50dp"
                 style="bold"/>
@@ -82,7 +96,6 @@
                 android:textSize="25sp"
                 android:textColor="@color/white"
                 android:visibility="visible"/>
-
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
