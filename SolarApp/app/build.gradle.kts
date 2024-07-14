@@ -37,6 +37,7 @@ dependencies {
 
     implementation(libs.androidx.material3.android)
     implementation(libs.volley)
+    implementation(libs.play.services.location)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

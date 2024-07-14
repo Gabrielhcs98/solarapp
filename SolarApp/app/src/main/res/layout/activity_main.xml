@@ -67,11 +67,27 @@
                 android:backgroundTint="@color/color_background_app"
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
-                android:layout_marginBottom="100dp"
-                android:text="@string/botao_estimar"
+                android:layout_marginBottom="12dp"
+                android:text="@string/botao_localizar"
                 android:textSize="18sp"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/buttonHere"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="@color/color_background_app"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:layout_marginBottom="100dp"
+                android:text="@string/botao_gps"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
 
         </LinearLayout>
     </ScrollView>
