@@ -89,8 +89,7 @@ class ResultsActivity : AppCompatActivity() {
 
         val progressBarLoading = findViewById<View>(R.id.progressBarLoading)
         progressBarLoading.visibility = View.VISIBLE
-        imageViewWeatherIcon.visibility = View.GONE
-        
+
         val request = ImageRequest.Builder(this)
             .data(iconUrl)
             .size(150, 150) // Redimensiona a imagem para 150x150 pixels

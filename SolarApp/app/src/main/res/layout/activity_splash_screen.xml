@@ -12,3 +12,4 @@
         android:layout_gravity="center"
         android:src="@mipmap/icone_painel_solar" />
 </FrameLayout>
+
