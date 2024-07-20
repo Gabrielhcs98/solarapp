@@ -3,6 +3,7 @@ package com.example.solarapp
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
@@ -12,10 +13,12 @@ import android.transition.Slide
 import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.example.solarapp.util.DialogUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -51,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (location.isEmpty() || !regex.matches(location)) {
-                showAlertDialog(getString(R.string.attention), getString(R.string.campo_invalido))
+                showAlertDialog(getString(R.string.campo_invalido))
             } else {
                 navigateToResultsActivity(location)
             }
@@ -163,7 +166,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun showAlertDialog(title: String, message: String) {
+    private fun showAlertDialog(message: String) {
         DialogUtils.showCustomAlertDialog(
             context = this,
             message = message,
@@ -175,8 +178,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        val toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
+        val view = toast.view
+
+        view?.background = ResourcesCompat.getDrawable(resources, R.drawable.drawable, null)
+        val textView = view?.findViewById<TextView>(android.R.id.message)
+        textView?.setTextColor(Color.WHITE) // Altere a cor do texto aqui
+
+        toast.show()
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
