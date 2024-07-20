@@ -1,19 +1,17 @@
 package com.example.solarapp
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.example.solarapp.util.DialogUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,9 +38,9 @@ class ResultsActivity : AppCompatActivity() {
         }
 
         imageLoader = ImageLoader.Builder(this)
-            .crossfade(true) // Habilite transição suave entre imagens
+            .crossfade(true)
             .components {
-                add(SvgDecoder.Factory()) // Adiciona suporte para SVGs
+                add(SvgDecoder.Factory())
             }
             .build()
 
@@ -85,7 +83,8 @@ class ResultsActivity : AppCompatActivity() {
         val celsiusTemperature = (weatherData.main.temp - 273.15).toInt()
         textViewResults.text = weatherData.name
         textViewTemperature.text = "${celsiusTemperature}°C"
-        val iconUrl = "https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" // Use a versão 2x para melhor qualidade
+        // Versão 2x para melhor qualidade
+        val iconUrl = "https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png"
 
         val progressBarLoading = findViewById<View>(R.id.progressBarLoading)
         progressBarLoading.visibility = View.VISIBLE
@@ -105,25 +104,13 @@ class ResultsActivity : AppCompatActivity() {
             buttonBack.visibility = View.INVISIBLE
         }
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.attention)
-        builder.setMessage(message)
-        builder.setPositiveButton("OK") { dialog, _ ->
-            dialog.dismiss()
-            finish()
-        }
-
-        builder.setOnDismissListener{
-            finish()
-        }
-
-        val dialog = builder.create()
-        val drawable = ResourcesCompat.getDrawable(resources, R.drawable.drawable, null)
-        dialog.window?.setBackgroundDrawable(drawable)
-        dialog.setOnShowListener {
-            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            positiveButton.setTextColor(Color.WHITE)
-        }
-        dialog.show()
+        DialogUtils.showCustomAlertDialog(
+            context = this,
+            message = message,
+            positiveButtonText = "OK",
+            onPositiveClick = {
+                finish()
+            }
+        )
     }
 }

@@ -1,12 +1,9 @@
-package com.example.solarapp.util
+package com.example.solarapp
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.res.ResourcesCompat
-import android.graphics.Color
-import com.example.solarapp.R
+import com.example.solarapp.util.DialogUtils
 
 class NetworkChecker(private val context: Context) {
 
@@ -32,20 +29,19 @@ class NetworkChecker(private val context: Context) {
     }
 
     private fun showDialog() {
-
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(context.getString(R.string.attention))
-        builder.setMessage(R.string.error_network)
-        builder.setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-        builder.setOnDismissListener {}
-
-        val dialog = builder.create()
-        val drawable = ResourcesCompat.getDrawable(context.resources, R.drawable.drawable, null)
-        dialog.window?.setBackgroundDrawable(drawable)
-        dialog.setOnShowListener {
-            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            positiveButton.setTextColor(Color.WHITE)
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        val message = if (networkCapabilities == null) {
+            context.getString(R.string.no_network)
+        } else {
+            context.getString(R.string.error_network)
         }
-        dialog.show()
+
+        DialogUtils.showCustomAlertDialog(
+            context = context,
+            message = message,
+            positiveButtonText = "OK"
+        )
     }
 }

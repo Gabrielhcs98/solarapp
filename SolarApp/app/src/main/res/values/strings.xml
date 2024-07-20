@@ -9,10 +9,11 @@
     <string name="error_fetching_data">Cidade não encontrada!</string>
     <string name="back">Voltar</string>
     <string name="result">Resultado</string>
-    <string name="error_network">Conexão com a internet lenta. Verifique e tente novamente!</string>
+    <string name="error_network">Conexão com a internet lenta.\nVerifique e tente novamente.</string>
     <string name="botao_localizar">Verificar tempo</string>
     <string name="botao_gps">Localização atual</string>
     <string name="go_to_settings">Ative sua localização</string>
     <string name="location_services_disabled">Localização desabilitada</string>
     <string name="cancel">Cancelar</string>
+    <string name="no_network">Conexão instável ou sem rede.\nVerifique e tente novamente.</string>
 </resources>
