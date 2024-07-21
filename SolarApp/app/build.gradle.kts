@@ -55,4 +55,5 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
     implementation("io.coil-kt:coil:2.6.0")
     implementation("io.coil-kt:coil-svg:2.0.0")
+    implementation("com.google.android.material:material:1.8.0")
 }
