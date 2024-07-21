@@ -40,8 +40,12 @@ class NetworkChecker(private val context: Context) {
 
         DialogUtils.showCustomAlertDialog(
             context = context,
+            title = context.getString(R.string.attention),
             message = message,
-            positiveButtonText = "OK"
+            positiveButtonText = "OK",
+            onPositiveClick = {
+                // Fecha o diálogo
+            }
         )
     }
 }

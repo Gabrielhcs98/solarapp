@@ -7,42 +7,43 @@ import androidx.core.content.res.ResourcesCompat
 import com.example.solarapp.R
 
 object DialogUtils {
-
     fun showCustomAlertDialog(
         context: Context,
+        title: String,
         message: String,
-        positiveButtonText: String = "OK",
+        positiveButtonText: String,
         negativeButtonText: String? = null,
-        onPositiveClick: () -> Unit = {},
-        onNegativeClick: () -> Unit = {}
+        onPositiveClick: () -> Unit,
+        onNegativeClick: (() -> Unit)? = null
     ) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(context.getString(R.string.attention))
-        builder.setMessage(message)
-
-        builder.setPositiveButton(positiveButtonText) { dialog, _ ->
-            onPositiveClick()
-            dialog.dismiss()
-        }
-
-        negativeButtonText?.let {
-            builder.setNegativeButton(it) { dialog, _ ->
-                onNegativeClick()
+        AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonText) { dialog, _ ->
+                onPositiveClick()
                 dialog.dismiss()
             }
-        }
-
-        val dialog = builder.create()
-        val drawable = ResourcesCompat.getDrawable(context.resources, R.drawable.drawable, null)
-        dialog.window?.setBackgroundDrawable(drawable)
-        dialog.setOnShowListener {
-            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            positiveButton.setTextColor(Color.WHITE)
-            negativeButtonText?.let {
-                val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-                negativeButton.setTextColor(Color.WHITE)
+            .apply {
+                if (negativeButtonText != null) {
+                    setNegativeButton(negativeButtonText) { dialog, _ ->
+                        onNegativeClick?.invoke()
+                        dialog.dismiss()
+                    }
+                }
             }
-        }
-        dialog.show()
+            .create()
+            .apply {
+                val drawable = ResourcesCompat.getDrawable(context.resources, R.drawable.drawable, null)
+                window?.setBackgroundDrawable(drawable)
+                setOnShowListener {
+                    val positiveButton = getButton(AlertDialog.BUTTON_POSITIVE)
+                    positiveButton.setTextColor(Color.WHITE)
+                    negativeButtonText?.let {
+                        val negativeButton = getButton(AlertDialog.BUTTON_NEGATIVE)
+                        negativeButton.setTextColor(Color.WHITE)
+                    }
+                }
+            }
+            .show()
     }
 }

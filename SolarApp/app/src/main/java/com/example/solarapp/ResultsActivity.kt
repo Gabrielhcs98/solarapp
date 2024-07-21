@@ -106,6 +106,7 @@ class ResultsActivity : AppCompatActivity() {
 
         DialogUtils.showCustomAlertDialog(
             context = this,
+            title = getString(R.string.attention),
             message = message,
             positiveButtonText = "OK",
             onPositiveClick = {

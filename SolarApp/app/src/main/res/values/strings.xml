@@ -16,4 +16,7 @@
     <string name="location_services_disabled">Localização desabilitada</string>
     <string name="cancel">Cancelar</string>
     <string name="no_network">Conexão instável ou sem rede.\nVerifique e tente novamente.</string>
+    <string name="begging_permission">Para acesssar a localização, o aplicativo precisa da sua permissão.\nPor favor, permita o acesso nas configurações.</string>
+    <string name="permission_required">Permissão necessária!</string>
+    <string name="permission_denied">Permissão de localização negada</string>
 </resources>

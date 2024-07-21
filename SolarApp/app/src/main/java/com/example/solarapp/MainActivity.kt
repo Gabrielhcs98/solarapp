@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.transition.Slide
@@ -65,31 +66,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                requestLocationPermission
-            )
-            return
-        }
-
-        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            showLocationServiceDialog()
-        } else {
-            obtainLocation()
-        }
-    }
 
     private fun showLocationServiceDialog() {
         DialogUtils.showCustomAlertDialog(
             context = this,
+            title = getString(R.string.attention),
             message = getString(R.string.location_services_disabled),
             positiveButtonText = getString(R.string.go_to_settings),
             negativeButtonText = getString(R.string.cancel),
@@ -169,6 +150,7 @@ class MainActivity : AppCompatActivity() {
     private fun showAlertDialog(message: String) {
         DialogUtils.showCustomAlertDialog(
             context = this,
+            title = getString(R.string.attention),
             message = message,
             positiveButtonText = "OK",
             onPositiveClick = {
@@ -188,6 +170,52 @@ class MainActivity : AppCompatActivity() {
         toast.show()
     }
 
+    private fun checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Se a permissão não foi concedida
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                showPermissionExplanationDialog()
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    requestLocationPermission
+                )
+            }
+            return
+        }
+
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            showLocationServiceDialog()
+        } else {
+            obtainLocation()
+        }
+    }
+
+    private fun showPermissionExplanationDialog() {
+        DialogUtils.showCustomAlertDialog(
+            context = this,
+            title = getString(R.string.permission_required),
+            message = getString(R.string.begging_permission),
+            positiveButtonText = "OK",
+            negativeButtonText = "Cancelar",
+            onPositiveClick = {
+                // Redireciona o usuário para as configurações do aplicativo
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
+            },
+            onNegativeClick = {
+                showToast(getString(R.string.permission_denied))
+            }
+        )
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -199,8 +227,19 @@ class MainActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 obtainLocation()
             } else {
-                showToast("Permissão de localização negada")
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                ) {
+                    // Permissão negada, mas o usuário pode solicitar novamente
+                    showToast("Permissão de localização negada")
+                } else {
+                    // Permissão negada permanentemente
+                    showPermissionExplanationDialog()
+                }
             }
         }
     }
 }
+
