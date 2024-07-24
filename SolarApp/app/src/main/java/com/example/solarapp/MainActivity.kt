@@ -159,16 +159,21 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun showToast(message: String) {
-        val toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
-        val view = toast.view
+    private var lastToast: Toast? = null
 
+    private fun showToast(message: String) {
+        // Cancelar o último toast, se existir
+        lastToast?.cancel()
+
+        // Criar um novo toast e exibi-lo
+        lastToast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
+        val view = lastToast?.view
         view?.background = ResourcesCompat.getDrawable(resources, R.drawable.drawable, null)
         val textView = view?.findViewById<TextView>(android.R.id.message)
-        textView?.setTextColor(Color.WHITE) // Altere a cor do texto aqui
-
-        toast.show()
+        textView?.setTextColor(Color.WHITE)
+        lastToast?.show()
     }
+
 
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(
