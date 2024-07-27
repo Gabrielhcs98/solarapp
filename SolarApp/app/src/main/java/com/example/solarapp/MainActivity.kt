@@ -1,6 +1,7 @@
 package com.example.solarapp
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -9,9 +10,10 @@ import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.transition.Slide
-import android.util.Log
 import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
@@ -38,7 +40,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonSubmit: Button
     private lateinit var buttonHere: Button
     private val requestLocationPermission = 1
+    private val requestLocationSettings = 2
     private lateinit var networkChecker: NetworkChecker
+    private val debounceDelay = 1000L // 1 segundo de debounce
+    private var lastClickTime = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,24 +56,38 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         buttonSubmit.setOnClickListener {
-            val location = editTextLocation.text.toString().trim()
-            val regex = Regex("^[A-Za-zÁÉÍÓÚÂÊÎÔÛÃÕÇáéíóúâêîôûãõç\\s]+$")
-
-            if (networkChecker.isNetworkQualityPoor()) {
-                networkChecker.checkNetworkQuality()
-                return@setOnClickListener
-            }
-
-            if (location.isEmpty() || !regex.matches(location)) {
-                showAlertDialog(getString(R.string.campo_invalido))
-            } else {
-                navigateToResultsActivity(location)
+            if (System.currentTimeMillis() - lastClickTime > debounceDelay) {
+                lastClickTime = System.currentTimeMillis()
+                handleSubmitClick()
             }
         }
 
         buttonHere.setOnClickListener {
-            checkLocationPermission()
+            if (System.currentTimeMillis() - lastClickTime > debounceDelay) {
+                lastClickTime = System.currentTimeMillis()
+                handleHereClick()
+            }
         }
+    }
+
+    private fun handleSubmitClick() {
+        val location = editTextLocation.text.toString().trim()
+        val regex = Regex("^[A-Za-zÁÉÍÓÚÂÊÎÔÛÃÕÇáéíóúâêîôûãõç\\s]+$")
+
+        if (networkChecker.isNetworkQualityPoor()) {
+            networkChecker.checkNetworkQuality()
+            return
+        }
+
+        if (location.isEmpty() || !regex.matches(location)) {
+            showAlertDialog(getString(R.string.campo_invalido))
+        } else {
+            navigateToResultsActivity(location)
+        }
+    }
+
+    private fun handleHereClick() {
+        checkLocationPermission()
     }
 
     private fun showLocationServiceDialog() {
@@ -80,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             negativeButtonText = getString(R.string.cancel),
             onPositiveClick = {
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
+                startActivityForResult(intent, requestLocationSettings)
             },
             onNegativeClick = {
                 // Fecha o diálogo
@@ -252,12 +271,29 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri = Uri.fromParts("package", packageName, null)
                 intent.data = uri
-                startActivity(intent)
+                startActivityForResult(intent, requestLocationSettings)
             },
             onNegativeClick = {
                 showToast(getString(R.string.permission_denied))
             }
         )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == requestLocationSettings) {
+            // Verifica se a permissão foi concedida e o GPS está ativado
+            val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            ) {
+                obtainLocation()
+            } else {
+                showToast("Localização não disponível")
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(
