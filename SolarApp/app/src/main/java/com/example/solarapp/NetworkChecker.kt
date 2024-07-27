@@ -5,14 +5,27 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.example.solarapp.util.DialogUtils
 
+/**
+ * Classe responsável por verificar a qualidade da rede e exibir diálogos apropriados.
+ *
+ * @property context O contexto da aplicação.
+ */
 class NetworkChecker(private val context: Context) {
 
+    /**
+     * Verifica a qualidade da rede e exibe um diálogo se a qualidade for ruim.
+     */
     fun checkNetworkQuality() {
         if (isNetworkQualityPoor()) {
             showDialog()
         }
     }
 
+    /**
+     * Verifica se a qualidade da rede é ruim.
+     *
+     * @return `true` se a qualidade da rede for ruim, `false` caso contrário.
+     */
     fun isNetworkQualityPoor(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork
@@ -28,6 +41,9 @@ class NetworkChecker(private val context: Context) {
         } ?: true
     }
 
+    /**
+     * Exibe um diálogo indicando problemas de rede.
+     */
     private fun showDialog() {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork

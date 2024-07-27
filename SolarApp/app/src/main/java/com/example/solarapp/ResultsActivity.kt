@@ -16,6 +16,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * ResultsActivity exibe os resultados climáticos baseados na cidade fornecida.
+ * Esta atividade lida com a obtenção de dados climáticos de uma API e atualiza a interface do usuário.
+ */
 class ResultsActivity : AppCompatActivity() {
 
     private lateinit var textViewResults: TextView
@@ -24,6 +28,10 @@ class ResultsActivity : AppCompatActivity() {
     private lateinit var buttonBack: Button
     private lateinit var imageLoader: ImageLoader
 
+    /**
+     * Chamado quando a atividade é criada.
+     * Inicializa os componentes da interface do usuário e configura os ouvintes de clique dos botões.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_results)
@@ -56,6 +64,11 @@ class ResultsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Busca dados climáticos da cidade fornecida utilizando um serviço de API.
+     *
+     * @param city A cidade para a qual buscar os dados climáticos.
+     */
     private fun fetchWeatherData(city: String) {
         val weatherService = WeatherServiceImpl()
         lifecycleScope.launch(Dispatchers.IO) {
@@ -79,6 +92,11 @@ class ResultsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Atualiza a interface do usuário com os dados climáticos fornecidos.
+     *
+     * @param weatherData Os dados climáticos para atualizar a interface do usuário.
+     */
     private fun updateUI(weatherData: WeatherData) {
         val celsiusTemperature = (weatherData.main.temp - 273.15).toInt()
         textViewResults.text = weatherData.name
@@ -99,6 +117,12 @@ class ResultsActivity : AppCompatActivity() {
         progressBarLoading.visibility = View.GONE
     }
 
+    /**
+     * Exibe um diálogo com a mensagem fornecida e oculta o botão Voltar, se especificado.
+     *
+     * @param message A mensagem a ser exibida no diálogo.
+     * @param ocultaBotaoVoltar Se verdadeiro, oculta o botão Voltar.
+     */
     private fun showDialog(message: String, ocultaBotaoVoltar: Boolean) {
         if (ocultaBotaoVoltar) {
             buttonBack.visibility = View.INVISIBLE

@@ -14,9 +14,11 @@
     <string name="botao_gps">Localização atual</string>
     <string name="go_to_settings">Ative sua localização</string>
     <string name="location_services_disabled">Localização desabilitada</string>
+    <string name="location_not_available">Localização não disponível</string>
     <string name="cancel">Cancelar</string>
     <string name="no_network">Conexão instável ou sem rede.\nVerifique e tente novamente.</string>
     <string name="begging_permission">Para acesssar a localização, o aplicativo precisa da sua permissão.\nPor favor, permita o acesso nas configurações.</string>
     <string name="permission_required">Permissão necessária!</string>
     <string name="permission_denied">Permissão de localização negada</string>
+    <string name="location_error">Erro ao obter localização: %s</string>
 </resources>

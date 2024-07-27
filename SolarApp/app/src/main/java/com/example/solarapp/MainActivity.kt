@@ -1,7 +1,6 @@
 package com.example.solarapp
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -10,8 +9,6 @@ import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.transition.Slide
 import android.view.Gravity
@@ -33,6 +30,11 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
 
+/**
+ * MainActivity é a atividade principal do aplicativo SolarApp.
+ * Esta atividade lida com a obtenção da localização do usuário,
+ * validação de entrada e navegação para outra atividade para exibir resultados.
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -45,6 +47,10 @@ class MainActivity : AppCompatActivity() {
     private val debounceDelay = 1000L // 1 segundo de debounce
     private var lastClickTime = 0L
 
+    /**
+     * Chamado quando a atividade é criada.
+     * Inicializa os componentes da interface do usuário e configura os ouvintes de clique dos botões.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -70,6 +76,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Trata o clique no botão Submit.
+     * Valida a entrada do usuário e navega para a atividade de resultados se a entrada for válida.
+     */
     private fun handleSubmitClick() {
         val location = editTextLocation.text.toString().trim()
         val regex = Regex("^[A-Za-zÁÉÍÓÚÂÊÎÔÛÃÕÇáéíóúâêîôûãõç\\s]+$")
@@ -86,10 +96,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Trata o clique no botão Here.
+     * Verifica a permissão de localização e obtém a localização atual do usuário.
+     */
     private fun handleHereClick() {
         checkLocationPermission()
     }
 
+    /**
+     * Exibe um diálogo informando que os serviços de localização estão desativados.
+     */
     private fun showLocationServiceDialog() {
         DialogUtils.showCustomAlertDialog(
             context = this,
@@ -107,6 +124,9 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Obtém a última localização conhecida do usuário e realiza a geocodificação para obter o endereço.
+     */
     private fun obtainLocation() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -136,6 +156,12 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Realiza a geocodificação das coordenadas fornecidas e obtém o endereço correspondente.
+     *
+     * @param latitude A latitude da localização.
+     * @param longitude A longitude da localização.
+     */
     private fun geocodeLocation(latitude: Double, longitude: Double) {
         val geocoder = Geocoder(this, Locale.getDefault())
         try {
@@ -160,6 +186,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Envia o nome do bairro ou da cidade para uma API.
+     *
+     * @param neighborhoodName O nome do bairro (ou null se não disponível).
+     * @param cityName O nome da cidade.
+     */
     private fun sendNeighborhoodOrCityToAPI(neighborhoodName: String?, cityName: String?) {
         val location = neighborhoodName ?: cityName
 
@@ -181,6 +213,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Simula o envio da localização para uma API e retorna o resultado.
+     *
+     * @param location A localização a ser enviada.
+     * @return true se o envio for bem-sucedido, false caso contrário.
+     */
     private suspend fun simulateSendLocationToAPI(location: String?): Boolean {
         return withContext(Dispatchers.IO) {
             if (location.isNullOrEmpty()) {
@@ -198,6 +236,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Navega para a atividade de resultados com a localização fornecida.
+     *
+     * @param location A localização a ser exibida na atividade de resultados.
+     */
     private fun navigateToResultsActivity(location: String) {
         val intent = Intent(this, ResultsActivity::class.java)
         intent.putExtra("city", location)
@@ -205,6 +248,11 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * Exibe um diálogo de alerta com a mensagem fornecida.
+     *
+     * @param message A mensagem a ser exibida no diálogo.
+     */
     private fun showAlertDialog(message: String) {
         DialogUtils.showCustomAlertDialog(
             context = this,
@@ -219,6 +267,11 @@ class MainActivity : AppCompatActivity() {
 
     private var lastToast: Toast? = null
 
+    /**
+     * Exibe um toast com a mensagem fornecida.
+     *
+     * @param message A mensagem a ser exibida no toast.
+     */
     private fun showToast(message: String) {
         // Cancelar o último toast, se existir
         lastToast?.cancel()
@@ -232,6 +285,9 @@ class MainActivity : AppCompatActivity() {
         lastToast?.show()
     }
 
+    /**
+     * Verifica a permissão de localização e solicita se necessário.
+     */
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -259,6 +315,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Exibe um diálogo explicando a necessidade da permissão de localização.
+     */
     private fun showPermissionExplanationDialog() {
         DialogUtils.showCustomAlertDialog(
             context = this,
@@ -279,6 +338,13 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Manipula o resultado da atividade de configurações.
+     *
+     * @param requestCode O código da solicitação.
+     * @param resultCode O código do resultado.
+     * @param data Dados adicionais fornecidos pela atividade.
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == requestLocationSettings) {
@@ -296,6 +362,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Manipula o resultado das solicitações de permissão.
+     *
+     * @param requestCode O código da solicitação.
+     * @param permissions As permissões solicitadas.
+     * @param grantResults Os resultados das permissões solicitadas.
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
