@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.transition.Slide
+import android.util.Log
 import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
@@ -162,8 +163,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun simulateSendLocationToAPI(location: String?): Boolean {
-        // Simulação de envio para a API. Retorna true se for bem-sucedido, false caso contrário.
-        return true
+        return withContext(Dispatchers.IO) {
+            if (location.isNullOrEmpty()) {
+                return@withContext false
+            }
+
+            try {
+                val weatherService = WeatherServiceImpl()
+                val apiKey = "a77b6a1742276dd6fb74dc969b5d4380"
+                val weatherData = weatherService.getWeather(location, apiKey)
+                return@withContext weatherData.name.isNotEmpty()
+            } catch (e: Exception) {
+                return@withContext false
+            }
+        }
     }
 
     private fun navigateToResultsActivity(location: String) {
@@ -255,16 +268,7 @@ class MainActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 obtainLocation()
             } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        this, Manifest.permission.ACCESS_FINE_LOCATION
-                    )
-                ) {
-                    // Permissão negada, mas o usuário pode solicitar novamente
-                    showToast("Permissão de localização negada")
-                } else {
-                    // Permissão negada permanentemente
-                    showPermissionExplanationDialog()
-                }
+                showPermissionExplanationDialog()
             }
         }
     }
