@@ -118,12 +118,13 @@ class MainActivity : AppCompatActivity() {
         try {
             val addresses = geocoder.getFromLocation(latitude, longitude, 1)
             if (!addresses.isNullOrEmpty()) {
-                val cityName = addresses[0].locality
-                if (cityName != null) {
-                    showToast("Pesquisando cidade: $cityName")
-                    sendCityToAPI(cityName)
+                val address = addresses[0]
+                val neighborhoodName = address.subLocality ?: address.locality ?: address.subAdminArea ?: address.adminArea
+                if (neighborhoodName != null) {
+                    showToast("Pesquisando bairro: $neighborhoodName")
+                    sendCityToAPI(neighborhoodName)
                 } else {
-                    showToast("Cidade não encontrada")
+                    showToast("Bairro não encontrado")
                 }
             } else {
                 showToast("Endereço não encontrado")
@@ -132,6 +133,8 @@ class MainActivity : AppCompatActivity() {
             showToast("Erro na geocodificação: ${e.message}")
         }
     }
+
+
 
     private fun sendCityToAPI(cityName: String) {
         val intent = Intent(this, ResultsActivity::class.java)
