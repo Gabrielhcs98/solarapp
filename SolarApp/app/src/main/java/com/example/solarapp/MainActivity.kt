@@ -20,9 +20,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.solarapp.util.DialogUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
 
@@ -65,7 +69,6 @@ class MainActivity : AppCompatActivity() {
             checkLocationPermission()
         }
     }
-
 
     private fun showLocationServiceDialog() {
         DialogUtils.showCustomAlertDialog(
@@ -120,11 +123,14 @@ class MainActivity : AppCompatActivity() {
             if (!addresses.isNullOrEmpty()) {
                 val address = addresses[0]
                 val neighborhoodName = address.subLocality ?: address.locality ?: address.subAdminArea ?: address.adminArea
+                val cityName = address.locality ?: address.subAdminArea ?: address.adminArea
+
                 if (neighborhoodName != null) {
                     showToast("Pesquisando bairro: $neighborhoodName")
-                    sendCityToAPI(neighborhoodName)
+                    sendNeighborhoodOrCityToAPI(neighborhoodName, cityName)
                 } else {
                     showToast("Bairro não encontrado")
+                    sendNeighborhoodOrCityToAPI(null, cityName)
                 }
             } else {
                 showToast("Endereço não encontrado")
@@ -134,13 +140,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun sendNeighborhoodOrCityToAPI(neighborhoodName: String?, cityName: String?) {
+        val location = neighborhoodName ?: cityName
 
+        lifecycleScope.launch {
+            try {
+                // Simulação de envio para a API. Substitua pela sua lógica de envio real.
+                val response = simulateSendLocationToAPI(location)
+                if (response) {
+                    navigateToResultsActivity(location!!)
+                } else if (neighborhoodName != null) {
+                    navigateToResultsActivity(cityName!!)
+                }
+            } catch (e: Exception) {
+                showToast("Erro ao enviar dados: ${e.message}")
+                if (neighborhoodName != null) {
+                    navigateToResultsActivity(cityName!!)
+                }
+            }
+        }
+    }
 
-    private fun sendCityToAPI(cityName: String) {
-        val intent = Intent(this, ResultsActivity::class.java)
-        intent.putExtra("city", cityName)
-        window.exitTransition = Slide(Gravity.END)
-        startActivity(intent)
+    private suspend fun simulateSendLocationToAPI(location: String?): Boolean {
+        // Simulação de envio para a API. Retorna true se for bem-sucedido, false caso contrário.
+        return true
     }
 
     private fun navigateToResultsActivity(location: String) {
@@ -176,7 +199,6 @@ class MainActivity : AppCompatActivity() {
         textView?.setTextColor(Color.WHITE)
         lastToast?.show()
     }
-
 
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(
@@ -226,9 +248,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == requestLocationPermission) {
@@ -236,8 +256,7 @@ class MainActivity : AppCompatActivity() {
                 obtainLocation()
             } else {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                        this, Manifest.permission.ACCESS_FINE_LOCATION
                     )
                 ) {
                     // Permissão negada, mas o usuário pode solicitar novamente
@@ -250,4 +269,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
