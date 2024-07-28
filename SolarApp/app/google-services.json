@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "589869717149",
+    "project_id": "solarapp-e496d",
+    "storage_bucket": "solarapp-e496d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:589869717149:android:a054015997e820d622a674",
+        "android_client_info": {
+          "package_name": "com.example.solarapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYf_pujuqdMCWngon8pdMfD53uHYIb4zM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
