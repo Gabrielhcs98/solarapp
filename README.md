@@ -15,6 +15,12 @@
 - **Tela Inicial:** Visualize a previsão do tempo atual e os ícones animados que indicam as condições climáticas.
 - **Navegação:** Utilize o menu de navegação para acessar previsões para outros dias e visualizar informações detalhadas sobre o clima.
 
+## Extra Informations
+
+Você pode acessar o meu TCC em PDF através do link:
+
+- [TCC - SolarApp](https://drive.google.com/file/d/1gQXFCkOlb541d8qjYF8aCyNhV96oTM-x/view?usp=sharing)
+
 ## Contact
 
 Para mais informações ou perguntas sobre o SolarApp, entre em contato com gabrielhcs1998@gmail.com.
