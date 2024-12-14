@@ -227,7 +227,7 @@ class MainActivity : AppCompatActivity() {
 
             try {
                 val weatherService = WeatherServiceImpl()
-                val apiKey = "a77b6a1742276dd6fb74dc969b5d4380"
+                val apiKey = getString(R.string.api_key)
                 val weatherData = weatherService.getWeather(location, apiKey)
                 return@withContext weatherData.name.isNotEmpty()
             } catch (e: Exception) {

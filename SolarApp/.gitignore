@@ -1,15 +1,18 @@
-*.iml
+# Arquivos e pastas gerados pelo build
+build/
+*.apk
+*.ap_
+
+# Arquivos de configuração local
+local.properties
+
+# Arquivos contendo chaves de API
+secrets.properties
+
+# Arquivos temporários do IDE
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+.idea/
+*.iml
 .DS_Store
-/build
 /captures
 .externalNativeBuild
-.cxx
-local.properties
