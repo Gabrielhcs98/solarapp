@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.solarapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.solarapp"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -59,4 +59,5 @@ dependencies {
     implementation("com.google.android.material:material:1.8.0")
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-analytics")
+    testImplementation(kotlin("test"))
 }
