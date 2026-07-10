@@ -106,12 +106,12 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val PULSE_DURATION = 500L // Tempo de pulsação em milissegundos
-        private const val PULSE_UP_SCALE = 1.5f // Valor de escala durante a pulsação
-        private const val SHRINK_DURATION = 1450L // Tempo de encolhimento em milissegundos
-        private const val EXPLODE_DURATION = 350L // Tempo de explosão em milissegundos
-        private const val SHRINK_VALUE = 0.5f // Valor de escala durante o encolhimento
-        private const val EXPLODE_VALUE = 3f // Valor de escala durante a explosão
-        private const val EXPLODE_ALPHA = 0f // Valor de opacidade durante a explosão
+        private const val PULSE_DURATION = 500L
+        private const val PULSE_UP_SCALE = 1.5f
+        private const val SHRINK_DURATION = 1450L
+        private const val EXPLODE_DURATION = 350L
+        private const val SHRINK_VALUE = 0.5f
+        private const val EXPLODE_VALUE = 3f
+        private const val EXPLODE_ALPHA = 0f
     }
 }

@@ -19,7 +19,6 @@ class WeatherRepository(
                     Result.failure(Exception("Cidade não encontrada"))
                 }
             } catch (_: java.io.FileNotFoundException) {
-                // O OpenWeatherMap retorna 404 (FileNotFound) quando a cidade não existe
                 Result.failure(Exception("Cidade não encontrada"))
             } catch (e: Exception) {
                 Result.failure(e)

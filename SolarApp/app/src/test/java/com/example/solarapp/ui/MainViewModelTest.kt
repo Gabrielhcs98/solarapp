@@ -45,10 +45,8 @@ class MainViewModelTest {
     @Test
     fun `validateAndSubmit returns error when location is empty`() = runTest {
         viewModel.uiState.test {
-            // When
             viewModel.validateAndSubmit("", "key")
 
-            // Then
             assertEquals(MainUiState.Idle, awaitItem())
             val errorState = awaitItem() as MainUiState.Error
             assertEquals("Nome de local inválido. Use apenas letras.", errorState.message)
@@ -58,10 +56,8 @@ class MainViewModelTest {
     @Test
     fun `validateAndSubmit returns error when location has numbers`() = runTest {
         viewModel.uiState.test {
-            // When
             viewModel.validateAndSubmit("Sã0 Paulo", "key")
 
-            // Then
             assertEquals(MainUiState.Idle, awaitItem())
             val errorState = awaitItem() as MainUiState.Error
             assertEquals("Nome de local inválido. Use apenas letras.", errorState.message)
@@ -70,31 +66,25 @@ class MainViewModelTest {
 
     @Test
     fun `validateAndSubmit emits navigation event on success`() = runTest {
-        // Given
         val mockData = createMockWeatherData("São Paulo")
         coEvery { repository.fetchWeather("São Paulo", "key") } returns Result.success(mockData)
 
         viewModel.navigationEvent.test {
-            // When
             viewModel.validateAndSubmit("São Paulo", "key")
 
-            // Then
             assertEquals("São Paulo", awaitItem())
         }
     }
 
     @Test
     fun `searchByCoordinates tries neighborhood then city`() = runTest {
-        // Given
         coEvery { repository.fetchWeather("Bairro", "key") } returns Result.failure(Exception("Not found"))
         val mockCityData = createMockWeatherData("Cidade")
         coEvery { repository.fetchWeather("Cidade", "key") } returns Result.success(mockCityData)
 
         viewModel.navigationEvent.test {
-            // When
             viewModel.searchByCoordinates("Bairro", "Cidade", "key")
 
-            // Then
             assertEquals("Cidade", awaitItem())
         }
     }

@@ -45,17 +45,14 @@ class MainActivityTest {
     fun shouldNavigateToResultsWhenValidCityIsEntered() {
         val city = "Sao Paulo"
         
-        // Tenta fechar o diálogo de aviso de rede lenta caso ele apareça
         try {
             onView(withText("OK")).perform(click())
         } catch (_: Exception) {
-            // Se o diálogo não apareceu, segue o jogo
         }
 
         onView(withId(R.id.editTextLocation)).perform(replaceText(city), closeSoftKeyboard())
         onView(withId(R.id.buttonSubmit)).perform(click())
 
-        // Aguarda um pouco mais para a API responder no celular real
         Thread.sleep(4000)
 
         intended(
@@ -68,13 +65,10 @@ class MainActivityTest {
 
     @Test
     fun shouldShowErrorDialogWhenInvalidCityIsEntered() {
-        // Digita um nome com números (inválido pelo nosso Regex no ViewModel)
         onView(withId(R.id.editTextLocation)).perform(replaceText("Sa0 Paulo"), closeSoftKeyboard())
         
-        // Clica no botão
         onView(withId(R.id.buttonSubmit)).perform(click())
 
-        // Verifica se o diálogo de erro aparece
         onView(withText(R.string.attention)).check(matches(isDisplayed()))
     }
 }

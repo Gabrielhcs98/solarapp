@@ -38,11 +38,8 @@ class SplashScreenTest {
 
     @Test
     fun splashScreenShouldNavigateToMainActivity() {
-        // Aguarda animações
         Thread.sleep(10000)
         
-        // Em alguns celulares reais, o evento de navegação pode ser registrado mais de uma vez
-        // Usamos times(2) conforme reportado pelo erro do Espresso
         Intents.intended(hasComponent(MainActivity::class.java.name), Intents.times(2))
     }
 }

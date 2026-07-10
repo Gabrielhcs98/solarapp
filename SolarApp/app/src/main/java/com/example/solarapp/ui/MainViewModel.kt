@@ -11,11 +11,9 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: WeatherRepository) : ViewModel() {
 
-    // Estado da UI: O que a tela deve exibir (Loading, Sucesso, etc)
     private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Idle)
     val uiState = _uiState.asStateFlow()
 
-    // Eventos únicos: Navegação ou Toasts (coisas que acontecem uma vez)
     private val _navigationEvent = MutableSharedFlow<String>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
@@ -48,7 +46,6 @@ class MainViewModel(private val repository: WeatherRepository) : ViewModel() {
         viewModelScope.launch {
             _uiState.value = MainUiState.Loading
 
-            // Tenta primeiro o bairro, se não existir/falhar, tenta a cidade
             val locationToTry = neighborhood ?: city
             if (locationToTry == null) {
                 _uiState.value = MainUiState.Error("Localização não encontrada")
@@ -60,7 +57,6 @@ class MainViewModel(private val repository: WeatherRepository) : ViewModel() {
                 _navigationEvent.emit(locationToTry)
                 _uiState.value = MainUiState.Idle
             }.onFailure {
-                // Se o bairro falhou, tentamos a cidade como "plano B"
                 if (neighborhood != null && city != null && locationToTry != city) {
                     val cityResult = repository.fetchWeather(city, apiKey)
                     cityResult.onSuccess {

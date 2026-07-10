@@ -34,16 +34,13 @@ class NetworkChecker(private val context: Context) {
         return networkCapabilities?.let {
             when {
                 it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                    it.linkDownstreamBandwidthKbps < 500 // 0,5 Mbps
+                    it.linkDownstreamBandwidthKbps < 500
                 }
                 else -> false
             }
         } ?: true
     }
 
-    /**
-     * Exibe um diálogo indicando problemas de rede.
-     */
     private fun showDialog() {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork
@@ -60,7 +57,6 @@ class NetworkChecker(private val context: Context) {
             message = message,
             positiveButtonText = "OK",
             onPositiveClick = {
-                // Fecha o diálogo
             }
         )
     }

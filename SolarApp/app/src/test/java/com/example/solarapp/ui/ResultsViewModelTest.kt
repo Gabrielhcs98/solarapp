@@ -44,16 +44,13 @@ class ResultsViewModelTest {
 
     @Test
     fun `fetchWeather emits success when repository returns data`() = runTest {
-        // Given
         val city = "Londrina"
         val mockData = createMockWeatherData(city)
         coEvery { repository.fetchWeather(city, "key") } returns Result.success(mockData)
 
         viewModel.uiState.test {
-            // When
             viewModel.fetchWeather(city, "key")
 
-            // Then
             assertEquals(ResultsUiState.Idle, awaitItem())
             assertEquals(ResultsUiState.Loading, awaitItem())
             val successState = awaitItem() as ResultsUiState.Success
@@ -63,16 +60,13 @@ class ResultsViewModelTest {
 
     @Test
     fun `fetchWeather emits success for another city`() = runTest {
-        // Given
         val city = "Curitiba"
         val mockData = createMockWeatherData(city)
         coEvery { repository.fetchWeather(city, "key") } returns Result.success(mockData)
 
         viewModel.uiState.test {
-            // When
             viewModel.fetchWeather(city, "key")
 
-            // Then
             assertEquals(ResultsUiState.Idle, awaitItem())
             assertEquals(ResultsUiState.Loading, awaitItem())
             val successState = awaitItem() as ResultsUiState.Success
@@ -82,14 +76,11 @@ class ResultsViewModelTest {
 
     @Test
     fun `fetchWeather emits error when repository fails`() = runTest {
-        // Given
         coEvery { repository.fetchWeather("Unknown", "key") } returns Result.failure(Exception("Net error"))
 
         viewModel.uiState.test {
-            // When
             viewModel.fetchWeather("Unknown", "key")
 
-            // Then
             assertEquals(ResultsUiState.Idle, awaitItem())
             assertEquals(ResultsUiState.Loading, awaitItem())
             val errorState = awaitItem() as ResultsUiState.Error
@@ -99,14 +90,11 @@ class ResultsViewModelTest {
 
     @Test
     fun `fetchWeather filters out URL from error message`() = runTest {
-        // Given
         coEvery { repository.fetchWeather("A", "key") } returns Result.failure(Exception("https://api.error"))
 
         viewModel.uiState.test {
-            // When
             viewModel.fetchWeather("A", "key")
 
-            // Then
             assertEquals(ResultsUiState.Idle, awaitItem())
             assertEquals(ResultsUiState.Loading, awaitItem())
             val errorState = awaitItem() as ResultsUiState.Error

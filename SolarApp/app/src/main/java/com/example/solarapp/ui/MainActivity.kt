@@ -44,13 +44,11 @@ import java.util.Locale
  */
 class MainActivity : AppCompatActivity() {
 
-    // Inicialização do ViewModel (Usando uma factory simples para o exemplo)
     private val viewModel: MainViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                     val service = WeatherServiceImpl()
-                    // Passamos o dispatcher explicitamente para facilitar testes futuros
                     val repo = WeatherRepository(service, Dispatchers.IO)
                     @Suppress("UNCHECKED_CAST")
                     return MainViewModel(repo) as T
@@ -87,7 +85,6 @@ class MainActivity : AppCompatActivity() {
         networkChecker = NetworkChecker(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // Verifica a qualidade da rede logo na abertura
         networkChecker.checkNetworkQuality()
 
         setupObservers()
@@ -96,20 +93,15 @@ class MainActivity : AppCompatActivity() {
             val location = editTextLocation.text.toString().trim()
             val apiKey = getString(R.string.api_key)
 
-            // A Activity não valida mais nada, ela apenas avisa o ViewModel
             viewModel.validateAndSubmit(location, apiKey)
         }
 
         buttonHere.setOnClickListener {
-            handleHereClick() // Permissões ainda são responsabilidade da Activity
+            handleHereClick()
         }
     }
 
-    /**
-     * Configura os observadores para o estado do ViewModel e eventos de navegação.
-     */
     private fun setupObservers() {
-        // Observando o Estado da UI (Loading, Erro, etc)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
@@ -130,7 +122,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Observando Eventos de Navegação (Acontecem uma vez)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.navigationEvent.collect { city ->
@@ -163,13 +154,11 @@ class MainActivity : AppCompatActivity() {
                 locationSettingsLauncher.launch(intent)
             },
             onNegativeClick = {
-                // Fecha o diálogo
             }
         )
     }
 
     private fun checkFinalLocationStatus() {
-        // Verifica se a permissão foi concedida e o GPS está ativado
         val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -245,7 +234,6 @@ class MainActivity : AppCompatActivity() {
                 val cityName = address.locality
                 val apiKey = getString(R.string.api_key)
 
-                // Delegamos a lógica de "tenta bairro ou tenta cidade" para o ViewModel
                 viewModel.searchByCoordinates(neighborhoodName, cityName, apiKey)
             } else {
                 showToast("Endereço não encontrado")
@@ -290,10 +278,8 @@ class MainActivity : AppCompatActivity() {
      * @param message A mensagem a ser exibida no toast.
      */
     private fun showToast(message: String) {
-        // Cancelar o último toast, se existir
         lastToast?.cancel()
 
-        // Criar um novo toast e exibi-lo
         lastToast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
         lastToast?.show()
     }
@@ -307,7 +293,6 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Se a permissão não foi concedida
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 showPermissionExplanationDialog()
             } else {

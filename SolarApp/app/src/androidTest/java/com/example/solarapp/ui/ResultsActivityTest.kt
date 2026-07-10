@@ -22,12 +22,8 @@ class ResultsActivityTest {
         }
 
         ActivityScenario.launch<ResultsActivity>(intent).use {
-            // Verifica se o cabeçalho de resultado está visível
             onView(withId(R.id.textViewHeader)).check(matches(isDisplayed()))
             
-            // Verifica se o nome da cidade (ou pelo menos o TextView) está visível
-            // Nota: Como o ViewModel buscará na rede, o nome final pode demorar. 
-            // Mas o TextViewResults deve estar lá.
             onView(withId(R.id.textViewResults)).check(matches(isDisplayed()))
         }
     }
@@ -40,10 +36,8 @@ class ResultsActivityTest {
         }
 
         ActivityScenario.launch<ResultsActivity>(intent).use {
-            // Aguarda o carregamento inicial sumir ou a Activity estabilizar
             Thread.sleep(2000)
             
-            // Verifica se o botão Voltar está visível
             onView(withId(R.id.buttonBack)).check(matches(isDisplayed()))
         }
     }
