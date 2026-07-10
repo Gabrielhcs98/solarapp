@@ -1,4 +1,6 @@
-package com.example.solarapp
+package com.example.solarapp.data
+
+import com.google.gson.annotations.SerializedName
 
 /**
  * Classe de dados que representa a resposta da API de clima.
@@ -13,20 +15,17 @@ data class WeatherData(
     val weather: List<Weather>
 )
 
-/**
- * Classe de dados que representa os dados principais do clima.
- *
- * @property temp A temperatura atual.
- */
 data class Main(
-    val temp: Double
+    val temp: Double,
+    val pressure: Int,
+    val humidity: Int,
+    @SerializedName("temp_min") val tempMin: Double,
+    @SerializedName("temp_max") val tempMax: Double
 )
 
-/**
- * Classe de dados que representa uma condição climática.
- *
- * @property icon O ícone que representa a condição climática.
- */
 data class Weather(
+    val id: Int,
+    val main: String,
+    val description: String,
     val icon: String
 )

@@ -1,4 +1,4 @@
-package com.example.solarapp
+package com.example.solarapp.data
 
 import com.google.gson.Gson
 import java.net.URL
@@ -16,11 +16,9 @@ class WeatherServiceImpl : WeatherService {
      * @return Uma instância de [WeatherData] contendo os dados do clima.
      */
     override suspend fun getWeather(city: String, apiKey: String): WeatherData {
-        // Faz uma requisição de rede para a API OpenWeatherMap
         val response =
             URL("https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey").readText()
 
-        // Faz o parse da resposta JSON em um objeto WeatherData
         val gson = Gson()
         return gson.fromJson(response, WeatherData::class.java)
     }
