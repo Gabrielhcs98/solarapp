@@ -1,9 +1,9 @@
-package com.example.solarapp
+package com.example.solarapp.util
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.example.solarapp.util.DialogUtils
+import com.example.solarapp.R
 
 /**
  * Classe responsável por verificar a qualidade da rede e exibir diálogos apropriados.

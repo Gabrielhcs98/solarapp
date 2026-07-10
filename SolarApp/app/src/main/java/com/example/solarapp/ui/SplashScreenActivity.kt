@@ -1,14 +1,17 @@
-package com.example.solarapp
+package com.example.solarapp.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.solarapp.R
 
 /**
  * Activity de splash screen que exibe uma animação de logo antes de navegar para a MainActivity.
  */
+@SuppressLint("CustomSplashScreen")
 class SplashScreenActivity : AppCompatActivity() {
 
     /**

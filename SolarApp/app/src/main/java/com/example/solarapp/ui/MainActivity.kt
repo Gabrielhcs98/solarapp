@@ -1,32 +1,39 @@
-package com.example.solarapp
+package com.example.solarapp.ui
 
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Build
 import android.provider.Settings
 import android.transition.Slide
 import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.solarapp.R
+import com.example.solarapp.data.WeatherRepository
+import com.example.solarapp.data.WeatherServiceImpl
 import com.example.solarapp.util.DialogUtils
+import com.example.solarapp.util.NetworkChecker
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
 
@@ -37,15 +44,34 @@ import java.util.Locale
  */
 class MainActivity : AppCompatActivity() {
 
+    // Inicialização do ViewModel (Usando uma factory simples para o exemplo)
+    private val viewModel: MainViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                    val service = WeatherServiceImpl()
+                    // Passamos o dispatcher explicitamente para facilitar testes futuros
+                    val repo = WeatherRepository(service, Dispatchers.IO)
+                    @Suppress("UNCHECKED_CAST")
+                    return MainViewModel(repo) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
+    }
+
+    private val locationSettingsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        checkFinalLocationStatus()
+    }
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var editTextLocation: EditText
     private lateinit var buttonSubmit: Button
     private lateinit var buttonHere: Button
     private val requestLocationPermission = 1
-    private val requestLocationSettings = 2
     private lateinit var networkChecker: NetworkChecker
-    private val debounceDelay = 1000L // 1 segundo de debounce
-    private var lastClickTime = 0L
 
     /**
      * Chamado quando a atividade é criada.
@@ -61,38 +87,56 @@ class MainActivity : AppCompatActivity() {
         networkChecker = NetworkChecker(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        // Verifica a qualidade da rede logo na abertura
+        networkChecker.checkNetworkQuality()
+
+        setupObservers()
+
         buttonSubmit.setOnClickListener {
-            if (System.currentTimeMillis() - lastClickTime > debounceDelay) {
-                lastClickTime = System.currentTimeMillis()
-                handleSubmitClick()
-            }
+            val location = editTextLocation.text.toString().trim()
+            val apiKey = getString(R.string.api_key)
+
+            // A Activity não valida mais nada, ela apenas avisa o ViewModel
+            viewModel.validateAndSubmit(location, apiKey)
         }
 
         buttonHere.setOnClickListener {
-            if (System.currentTimeMillis() - lastClickTime > debounceDelay) {
-                lastClickTime = System.currentTimeMillis()
-                handleHereClick()
-            }
+            handleHereClick() // Permissões ainda são responsabilidade da Activity
         }
     }
 
     /**
-     * Trata o clique no botão Submit.
-     * Valida a entrada do usuário e navega para a atividade de resultados se a entrada for válida.
+     * Configura os observadores para o estado do ViewModel e eventos de navegação.
      */
-    private fun handleSubmitClick() {
-        val location = editTextLocation.text.toString().trim()
-        val regex = Regex("^[A-Za-zÁÉÍÓÚÂÊÎÔÛÃÕÇáéíóúâêîôûãõç\\s]+$")
-
-        if (networkChecker.isNetworkQualityPoor()) {
-            networkChecker.checkNetworkQuality()
-            return
+    private fun setupObservers() {
+        // Observando o Estado da UI (Loading, Erro, etc)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    when (state) {
+                        is MainUiState.Loading -> {
+                            buttonSubmit.isEnabled = false
+                            showToast("Carregando...")
+                        }
+                        is MainUiState.Error -> {
+                            buttonSubmit.isEnabled = true
+                            showAlertDialog(state.message)
+                        }
+                        is MainUiState.Idle -> {
+                            buttonSubmit.isEnabled = true
+                        }
+                    }
+                }
+            }
         }
 
-        if (location.isEmpty() || !regex.matches(location)) {
-            showAlertDialog(getString(R.string.campo_invalido))
-        } else {
-            navigateToResultsActivity(location)
+        // Observando Eventos de Navegação (Acontecem uma vez)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.navigationEvent.collect { city ->
+                    navigateToResultsActivity(city)
+                }
+            }
         }
     }
 
@@ -116,12 +160,26 @@ class MainActivity : AppCompatActivity() {
             negativeButtonText = getString(R.string.cancel),
             onPositiveClick = {
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivityForResult(intent, requestLocationSettings)
+                locationSettingsLauncher.launch(intent)
             },
             onNegativeClick = {
                 // Fecha o diálogo
             }
         )
+    }
+
+    private fun checkFinalLocationStatus() {
+        // Verifica se a permissão foi concedida e o GPS está ativado
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        ) {
+            obtainLocation()
+        } else {
+            showToast("Localização não disponível")
+        }
     }
 
     /**
@@ -164,74 +222,33 @@ class MainActivity : AppCompatActivity() {
      */
     private fun geocodeLocation(latitude: Double, longitude: Double) {
         val geocoder = Geocoder(this, Locale.getDefault())
-        try {
-            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            geocoder.getFromLocation(latitude, longitude, 1) { addresses ->
+                handleGeocodeResult(addresses.toList())
+            }
+        } else {
+            try {
+                @Suppress("DEPRECATION")
+                val addresses = geocoder.getFromLocation(latitude, longitude, 1)?.toList() ?: emptyList()
+                handleGeocodeResult(addresses)
+            } catch (e: IOException) {
+                showToast("Erro na geocodificação: ${e.message}")
+            }
+        }
+    }
+
+    private fun handleGeocodeResult(addresses: List<android.location.Address>?) {
+        runOnUiThread {
             if (!addresses.isNullOrEmpty()) {
                 val address = addresses[0]
-                val neighborhoodName = address.subLocality ?: address.locality ?: address.subAdminArea ?: address.adminArea
-                val cityName = address.locality ?: address.subAdminArea ?: address.adminArea
+                val neighborhoodName = address.subLocality
+                val cityName = address.locality
+                val apiKey = getString(R.string.api_key)
 
-                if (neighborhoodName != null) {
-                    showToast("Pesquisando bairro: $neighborhoodName")
-                    sendNeighborhoodOrCityToAPI(neighborhoodName, cityName)
-                } else {
-                    showToast("Bairro não encontrado")
-                    sendNeighborhoodOrCityToAPI(null, cityName)
-                }
+                // Delegamos a lógica de "tenta bairro ou tenta cidade" para o ViewModel
+                viewModel.searchByCoordinates(neighborhoodName, cityName, apiKey)
             } else {
                 showToast("Endereço não encontrado")
-            }
-        } catch (e: IOException) {
-            showToast("Erro na geocodificação: ${e.message}")
-        }
-    }
-
-    /**
-     * Envia o nome do bairro ou da cidade para uma API.
-     *
-     * @param neighborhoodName O nome do bairro (ou null se não disponível).
-     * @param cityName O nome da cidade.
-     */
-    private fun sendNeighborhoodOrCityToAPI(neighborhoodName: String?, cityName: String?) {
-        val location = neighborhoodName ?: cityName
-
-        lifecycleScope.launch {
-            try {
-                // Simulação de envio para a API. Substitua pela sua lógica de envio real.
-                val response = simulateSendLocationToAPI(location)
-                if (response) {
-                    navigateToResultsActivity(location!!)
-                } else if (neighborhoodName != null) {
-                    navigateToResultsActivity(cityName!!)
-                }
-            } catch (e: Exception) {
-                showToast("Erro ao enviar dados: ${e.message}")
-                if (neighborhoodName != null) {
-                    navigateToResultsActivity(cityName!!)
-                }
-            }
-        }
-    }
-
-    /**
-     * Simula o envio da localização para uma API e retorna o resultado.
-     *
-     * @param location A localização a ser enviada.
-     * @return true se o envio for bem-sucedido, false caso contrário.
-     */
-    private suspend fun simulateSendLocationToAPI(location: String?): Boolean {
-        return withContext(Dispatchers.IO) {
-            if (location.isNullOrEmpty()) {
-                return@withContext false
-            }
-
-            try {
-                val weatherService = WeatherServiceImpl()
-                val apiKey = getString(R.string.api_key)
-                val weatherData = weatherService.getWeather(location, apiKey)
-                return@withContext weatherData.name.isNotEmpty()
-            } catch (e: Exception) {
-                return@withContext false
             }
         }
     }
@@ -278,10 +295,6 @@ class MainActivity : AppCompatActivity() {
 
         // Criar um novo toast e exibi-lo
         lastToast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
-        val view = lastToast?.view
-        view?.background = ResourcesCompat.getDrawable(resources, R.drawable.drawable, null)
-        val textView = view?.findViewById<TextView>(android.R.id.message)
-        textView?.setTextColor(Color.WHITE)
         lastToast?.show()
     }
 
@@ -330,36 +343,12 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri = Uri.fromParts("package", packageName, null)
                 intent.data = uri
-                startActivityForResult(intent, requestLocationSettings)
+                locationSettingsLauncher.launch(intent)
             },
             onNegativeClick = {
                 showToast(getString(R.string.permission_denied))
             }
         )
-    }
-
-    /**
-     * Manipula o resultado da atividade de configurações.
-     *
-     * @param requestCode O código da solicitação.
-     * @param resultCode O código do resultado.
-     * @param data Dados adicionais fornecidos pela atividade.
-     */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == requestLocationSettings) {
-            // Verifica se a permissão foi concedida e o GPS está ativado
-            val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            ) {
-                obtainLocation()
-            } else {
-                showToast("Localização não disponível")
-            }
-        }
     }
 
     /**

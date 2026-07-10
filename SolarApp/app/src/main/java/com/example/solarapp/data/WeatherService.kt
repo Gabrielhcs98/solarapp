@@ -1,4 +1,4 @@
-package com.example.solarapp
+package com.example.solarapp.data
 
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -6,7 +6,7 @@ import retrofit2.http.Query
 /**
  * Interface de serviço para obter dados climáticos usando Retrofit.
  */
-interface WeatherService {
+fun interface WeatherService {
 
     /**
      * Obtém os dados climáticos para uma cidade específica.
